@@ -1,0 +1,7 @@
+spring:
+  application:
+    name: serviciodos  # Nombre único correspondiente al Config Server
+  cloud:
+    config:
+      uri: http://localhost:8888
+      fail-fast: true

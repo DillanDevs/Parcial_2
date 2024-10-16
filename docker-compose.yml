@@ -1,0 +1,79 @@
+version: '3.8'
+
+services:
+
+  servicio-uno:
+    build:
+      context: ./ResolveEnigmaAp
+      dockerfile: Dockerfile
+    container_name: servicio-uno
+    ports:
+      - "8080:8080"  
+    environment:
+      - SPRING_PROFILES_ACTIVE=default
+      - SPRING_CLOUD_CONFIG_URI=http://host.docker.internal:8888
+
+  servicio-dos:
+    build:
+      context: ./ResolveEnigmaAp2
+      dockerfile: Dockerfile
+    container_name: servicio-dos
+    ports:
+      - "8081:8081"
+    depends_on:
+      - servicio-uno
+    environment:
+      - SPRING_PROFILES_ACTIVE=default
+      - SPRING_CLOUD_CONFIG_URI=http://host.docker.internal:8888
+
+  servicio-tres:
+    build:
+      context: ./ResolveEnigmaAp3
+      dockerfile: Dockerfile
+    container_name: servicio-tres
+    ports:
+      - "8082:8082"
+    depends_on:
+      - servicio-dos
+    environment:
+      - SPRING_PROFILES_ACTIVE=default
+      - SPRING_CLOUD_CONFIG_URI=http://host.docker.internal:8888
+
+  orquestador:
+    build:
+      context: ./TallerReactiva
+      dockerfile: Dockerfile
+    container_name: orquestador
+    ports:
+      - "9000:9000"
+    depends_on:
+      - servicio-tres
+    environment:
+      - SPRING_PROFILES_ACTIVE=default
+      - SPRING_CLOUD_CONFIG_URI=http://host.docker.internal:8888
+
+  webhook-service:
+    build:
+      context: ./webhook
+      dockerfile: Dockerfile
+    container_name: webhook-service
+    ports:
+      - "8083:8083"
+    depends_on:
+      - orquestador
+    environment:
+      - SPRING_PROFILES_ACTIVE=default
+      - SPRING_CLOUD_CONFIG_URI=http://host.docker.internal:8888
+
+  batch-service:
+    build:
+      context: ./batch
+      dockerfile: Dockerfile
+    container_name: batch-service
+    ports:
+      - "9001:9001"
+    depends_on:
+      - webhook-service
+    environment:
+      - SPRING_PROFILES_ACTIVE=default
+      - SPRING_CLOUD_CONFIG_URI=http://host.docker.internal:8888

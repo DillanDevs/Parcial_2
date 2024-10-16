@@ -1,0 +1,8 @@
+spring:
+  application:
+    name: orquestador  # Asegúrate de que este nombre coincida con el directorio en tu repositorio de configuraciones
+  config:
+    import: "configserver:http://host.docker.internal:8888"  # Reemplaza con la URL de tu Config Server si es diferente
+  cloud:
+    config:
+      fail-fast: true  # Opcional: la aplicación fallará si no puede conectarse al Config Server
